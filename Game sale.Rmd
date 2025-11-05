@@ -1,0 +1,435 @@
+---
+title: 'Game Sale Report'
+author: 'YUANCHEN LING'
+date: "December 10, 2022"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+subtitle: STA302 - Final Assignment 
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo= FALSE, warning = FALSE, include = FALSE)
+library(openintro)
+library(tidyverse)
+library(devtools)
+library(gridExtra)
+library(car)
+```
+## Introduction
+
+Nowadays,  Gaming has no doubt became one of the most popular hobbies worldwide. Nintendo, Electronic Arts, Rockstar games, Ubisoft entertainments are examples of big companies growing fast in the late 1990s to now because of game they produce. However, with game industry becoming more popular, the competitions in the market is also getting more intense as well. Therefore, it is reasonable for companies to predict in which way selling the game could help the company get the most benefits. The goal of this research is to find which factors would influence the sales to a large extent by using linear models. After doing so, companies could predict or improve their marketing strategy for bigger benefits.
+
+It is reasonable for people to think quality is the fist key element effecting game sales. Logically, I could consider game as a regular product in the market. With a research conducted, it finds out that the star rating(media rating or user rating) has a positive effete on game sales, which means higher the star rating is, higher the sale would be. It could be said that rating has a correlation with the sale of a product. Therefore, in this scenario, the professional game media's comments on a game might be a effect the game sale positively.[1]
+
+And also, types of platforms might also be a key in effecting the game sales. A research is conducted by choosing the data set of game sales between 2006 to 2011 shows that clear differences exist in across different platforms.Nintendo was the biggest leader in gaming, with the Wii being the main console and the DS as the main handheld platform. Nintendo had fallen behind SONY before the sample was studied, but the pioneer of body movement and mobility in the Wii human-machine interface pushed Nintendo to the top of the list. The game sales might also relate to the format it releases to. Therefore, types of format might still be a factor of influencing the game sale till 2016.[2]
+
+Last but not least, in my research, publication and production company might also be key factors effecting the sale of a game. The research found that small companies are more vulnerable and lack of strength in financing, which means they have less resources to propaganda their products or they lack the technology to produce the game, which surely would be a disadvantage in competing with bigger companies I have mentioned above. Thus, scale of companies is also a part I concern.[3]
+
+To conclude, in this study, I will conduct a prediction study by performing linear model to help me find out which factors would effect the game sales significantly.As I discussed above, I may predict that the production company, platform and media score might be three important factors influencing the game sales. Therefore. my null hypothesis is that the company, platform and media score are significant in effecting the game sales. My alternative hypothesis is that the company, platform and media score are not significant in effecting the game sales. One thing to mention is that the global game sales would be calculated as a sum of all sales in different regions. It is no doubt that regions would pose a significant effect on the game sales. Accordingly, I build the model also to see which region would contribute the most to the global sales.  
+
+## Method
+The goal of my research is to find the best fitted linear model to predict the global sales with some important variables. To fit the model, I firstly drop the missing information, which gives me a cleaned data set.To start, I split the cleaned data set into two parts, which is training data set and test data set containing 75% and 25% data respectively. After I build these two models, I use figures for categorical and numerical variables in both data sets for EDA(Exploratory Data Analysis) and to have a general idea about the information about different kinds of variables.
+
+Then, I build the full model, which represents the linear relationship between global sales and all the related variables in the data set. Then, since some of the numerical variables in my data set contain 0, I conduct transformation by adding 0.1 on numerical variables of training and test data sets to build the future model. Besides, I use BOXCOX transformation on the numerical variables to deal with the potential violations 1 or 2 in both full models. I would round the power accordingly to its output. That is saying if the number is 1.6, I would round it to 2 on my own. The reason for not checking residual plots for violation of assumptions is that I would do them after doing transformation in the full model. After doing the transformation, I get two similar transferred models on the training set and test data set.
+
+Then, I use VIF to check if there are any variables with multicollinearity is not present in the model. If there exists variables with VIF>5, which means these predictors would have multicollinaerity with other variables. Accordingly, I will remove the predictors with VIF < 5 one by one. As a result, I build up an new model by adding or removing such variables manually. The remaining variables are without collinearity. After that, I reduce each variable one by one manually to check which final model fits best among all models. To distinguish which models fits better, I use ANOVA to test. If the p-value is less than 0.05, it shows that my transferred full model has a better fit compared to my full model. Removing the variable one by one and compare each model with my final model, I repeat this process and find my original full model has the best fit linearity among all models.Therefore, I may choose final model as my model.   
+
+However, this method is under all assumptions being satisfied. If assumptions are violated, my method would be less reliable. If condition1, condition2 and other assumptions are satisfied, I could ensure that my final model is the best among all models. I check additional two conditionals and residual plots to check for assumptions. I conduct this process on both test and training data set to include all the possible violations. 
+
+To check additional two conditions are violated or not, I use residual plot to check condition 1 is violated or not. By using the residual plot between predicted value for global sales(y) and predicated global sales($\hat{y}$), I may say condition 1 is not satisfied if no linear pattern exists in the figures. If there exists linear or random pattern is found between all numeric variables, I may say condition 2 has been satisfied. Next, I check other assumptions by using residuals plots and QQ plots. The residual between fitted model and residual is to check linearity assumption. Similar as above, random patterns or linear patterns represent linearity assumption being satisfied. Other residuals plots between residual and numerical variables are to check the independent assumption and homoscedasticity. If the plot shows no clusters in plots, then the independent assumption would be satisfied. If points on the graph show random patterns, then the homoscedasticity assumption would be satisfied. QQ plot is to check whether assumption normality of Errors is satisfied or not. I use residuals plots between residual and fitted models to see if the linearity assumptions is satisfied. And  It is no doubt that I want the perfect model with no assumptions are being violated. However, it is not often the case in reality. Therefore, I would choose the models with less violations by building the new model manually(adding or removing variables in the previous steps). 
+
+Lastly, I check the outliers and influential points in the models. I use DEFITS as a standard to measure how many influential points would be in my model. If there are reasons for me to remove such data, I may refit an new model based on that. If not, I will take a look at both data sets and to see if there exist any new violations. If both datasets see the similar trend and linear relationship, then they would be my final models. 
+
+## Results
+The data set is from Kaggle.com.[4] There are 16719 games in total, containing the information about the name, publisher, developer, year of release, the media score and review counts, the user score and review counts, rating and year of release. Under my consideration, I exclude the information name of the game to fit the products since I mainly focus on the game sales. Table 4 in appendix contains the important variables which I would use for fitting the fact. Similarly, although game sales might increase with a increase in purchasing powers after year, it is hard and unrealistic for companies to control the year of release. Therefore, these two variables are not under my consideration. For the numerical variables, I multiple sales by 100 as the sale variables are in unit of billion. After I drop the missing values, I get a cleaned data set with 6826 variables. For the testing and training data set, there are 1706 and 5120 observations.
+```{r}
+video_games <- read.csv("Video_Games_Sales_as_at_22_Dec_2016.csv")
+video_games_c <- video_games %>% 
+  mutate(Publisher = as.factor(Publisher),
+         NA_Sales = NA_Sales*100,
+         EU_Sales = EU_Sales*100,
+         JP_Sales = JP_Sales *100,
+         Other_Sales = Other_Sales*100,
+         Global_Sales = Global_Sales*100,
+         Genre = as.factor(Genre),
+         Developer = as.factor(Developer))%>%
+  filter(Rating!= '')%>%
+  filter(Year_of_Release!="N/A")%>%
+  na.omit()
+set.seed(065)
+x <- nrow(video_games_c)
+tra_n<- sample(1:x, size=round(0.75*x))
+```
+```{r}
+train_set <- video_games_c[tra_n,]
+test_set <- video_games_c[-tra_n,]
+```
+
+
+```{r,include = TRUE}
+Rating_p <- train_set %>%
+  ggplot(aes(x=Rating))+geom_bar(color='Grey')+labs(title='Rating')
+
+Platform_p <- train_set %>%
+  ggplot(aes(x=Platform))+geom_bar(color='Grey')+labs(title='Platforms')
+
+Genre_p <- train_set %>%
+  ggplot(aes(x=Genre))+geom_bar(color='Grey')+labs(title='Game Genre')
+
+
+grid.arrange(Rating_p,Platform_p,Genre_p, top = 'Figure1: The categorical variables on training dataset')
+
+Rating_p <- train_set %>%
+  ggplot(aes(x=Rating))+geom_bar(color='Grey')+labs(title='Rating')
+
+Platform_p <- test_set %>%
+  ggplot(aes(x=Platform))+geom_bar(color='Grey')+labs(title='Platforms')
+
+Genre_p <- test_set %>%
+  ggplot(aes(x=Genre))+geom_bar(color='Grey')+labs(title='Game Genre')
+
+grid.arrange(Rating_p,Platform_p,Genre_p, top = 'Figure2: The categorical variables on testing dataset')
+
+Figure3 <- data.frame("Variables" = c("Sales in NA", "Sales in Europe", "Sales in Japan", "Global Sales", "Media score", "Media comment number" , "User Score on the game", "Count of users scoring about the game"), "Mean" = c(mean(train_set$NA_Sales),mean(train_set$EU_Sales),mean(train_set$JP_Sales),mean(train_set$Global_Sales),mean(train_set$Critic_Score),mean(train_set$Critic_Count),mean(train_set$User_Score), mean(train_set$User_Count)), "Median" = c(median(train_set$NA_Sales),median(train_set$EU_Sales),median(train_set$JP_Sales),                                                    median(train_set$Global_Sales),median(train_set$Critic_Score),median(train_set$Critic_Count),median(train_set$User_Score), median(train_set$User_Count)),"Maximum" = c(max(train_set$NA_Sales),max(train_set$EU_Sales),max(train_set$JP_Sales),                                                    max(train_set$Global_Sales),max(train_set$Critic_Score),max(train_set$Critic_Count),max(train_set$User_Score), max(train_set$User_Count)), "Minimum" = c(min(train_set$NA_Sales),min(train_set$EU_Sales),min(train_set$JP_Sales),                                                    min(train_set$Global_Sales),min(train_set$Critic_Score),max(train_set$Critic_Count),min(train_set$User_Score), min(train_set$User_Count)), "Standard Deviation" = c(sd(train_set$NA_Sales),sd(train_set$EU_Sales),sd(train_set$JP_Sales),                                                    sd(train_set$Global_Sales),sd(train_set$Critic_Score),sd(train_set$Critic_Count),sd(train_set$User_Score), sd(train_set$User_Count)) )
+
+knitr::kable(Figure3,
+             caption="The numerical variables of the training set")
+
+
+Figure4 <- data.frame("Variables" = c("Sales in NA", "Sales in Europe", "Sales in Japan", "Global Sales", "Media score", "Media comment number" , "User Score on the game", "Count of users scoring about the game"), "Mean" = c(mean(test_set$NA_Sales),mean(test_set$EU_Sales),mean(test_set$JP_Sales),mean(test_set$Global_Sales),mean(test_set$Critic_Score),mean(test_set$Critic_Count),mean(test_set$User_Score), mean(test_set$User_Count)), "Median" = c(median(test_set$NA_Sales),median(test_set$EU_Sales),median(test_set$JP_Sales),                                                    median(test_set$Global_Sales),median(test_set$Critic_Score),median(test_set$Critic_Count),median(test_set$User_Score), median(test_set$User_Count)),"Maximum" = c(max(test_set$NA_Sales),max(test_set$EU_Sales),max(test_set$JP_Sales),                                                    max(test_set$Global_Sales),max(test_set$Critic_Score),max(test_set$Critic_Count),max(test_set$User_Score), max(test_set$User_Count)), "Minimum" = c(min(test_set$NA_Sales),min(test_set$EU_Sales),min(test_set$JP_Sales),                                                    min(test_set$Global_Sales),min(test_set$Critic_Score),max(test_set$Critic_Count),min(test_set$User_Score), min(test_set$User_Count)), "Standard Deviation" = c(sd(test_set$NA_Sales),sd(test_set$EU_Sales),sd(test_set$JP_Sales),                                                    sd(test_set$Global_Sales),sd(test_set$Critic_Score),sd(test_set$Critic_Count),sd(test_set$User_Score), sd(test_set$User_Count)) )
+
+knitr::kable(Figure4,
+             caption="The numerical variables of the testing set")
+
+```
+
+
+It could be seen from both figure 1, figure 2 and table1, table2 that the distribution of different categorical and numerical variables follows a similar trend for both data sets. No significant differences exist between two data sets. For figure 1 and 2, it is pretty clear that most game are sold in PS2 platform. And most of games companies sell are action games with rates mainly being E(suitable for children older than 6) and T(T games are meant for teenagers.). It gives me a general idea about which platform is the most popular in the past decades and what kind of game is most common in the market. From the figure 3 and 4, it could be seen that the mean for global sales is around 72. Its mean is much higher than its median, which means it is super right-skewed. One interesting fact to notice is the maximum and minimum for sales in two different data sets. It is mainly due to large variance of different game sales in the original data set. Although I may say that these two groups see a significantly different trend in maximum and minimum, these two data sets could still work since the real world data usually does not follow a typical normal distribution. 
+
+By conducting the methods above, I firstly use BoxCox and remove the multi collinearity variables. After removing the variables whose VIF>5, I have a full model. In both testing and training data sets, I obtain a transferred full model, represents the linear relationship between $\log{Y}$(Y represents the global sales) and $log({NASales})$, $log({EuSales})$, ${JPSales}^{-1}$, $log({OtherSales})$,  ${JPSales}^{2}$, $log({MediaComments})$, ${(UserCount)}^{3}$ and $log({UserCommentCounts})$. Then, based on above methods, I find out my global sales and predicted global sales have a strong linear pattern for both testing and training sets. It is clear that condition 1 has been satisfied in both data sets. From the fitted models in test and training data sets, I find either variables are in linear relationship or they are completely in random patterns except the variable user comments count. When checking other assumptions by residual plots, I find one variable user count has colinearity with other variables. I remove this variable and refit this model. Although full model has a better fitness, it violates the condition 2, which motivates me to fit a new model. Using it to compare other models, I find out VIF of it is still the lowest with other reduced models. After checking the model assumptions, I find out that although two conditions are satisfied, but some of other assumptions are not satisfied. By the figure5 and figure 6(See appendix), it is clear that QQ plots shows normality is violated in both data sets since the line is not a perfect linear relationship. Its variance is larger than what I expect, thus it violates the normality is not satisfied perfectly. Compared to my original preferred model, this model has a similar trend in linearity and homoscedasticity on training and testing data sets. It is likely for the model to violate homoscedasticity on some of the variables and to violate the independent assumption slightly. However, since other models still violate the assumptions, this graph has the least violation of assumptions and have the best fitness. Therefore, I still use this model for interpretation in the discussion.
+
+```{r}
+fullmodel <- lm(Global_Sales ~ . -Name -Year_of_Release, data=train_set)
+```
+```{r}
+set.seed(066)
+train_set <- train_set%>%
+  mutate(NA_Sales = NA_Sales+0.1,
+         EU_Sales = EU_Sales + 0.1,
+         JP_Sales = JP_Sales + 0.1,
+         Other_Sales = Other_Sales + 0.1,
+         Global_Sales = NA_Sales+EU_Sales+JP_Sales+Other_Sales)
+test_set <- test_set%>%
+  mutate(NA_Sales = NA_Sales+0.1,
+         EU_Sales = EU_Sales + 0.1,
+         JP_Sales = JP_Sales + 0.1,
+         Other_Sales = Other_Sales + 0.1,
+         Global_Sales = NA_Sales+EU_Sales+JP_Sales+Other_Sales)
+z <- powerTransform(cbind(train_set$Global_Sales,
+                             train_set$NA_Sales,
+                             train_set$EU_Sales,
+                             train_set$JP_Sales,
+                             train_set$Other_Sales,
+                             train_set$Critic_Score,
+                            train_set$Critic_Count,
+                             train_set$User_Score,
+                            train_set$User_Count))
+zz <- powerTransform(cbind(test_set$Global_Sales,
+                             test_set$NA_Sales,
+                             test_set$EU_Sales,
+                             test_set$JP_Sales,
+                             test_set$Other_Sales,
+                             test_set$Critic_Score,
+                            test_set$Critic_Count,
+                             test_set$User_Score,
+                            test_set$User_Count))
+
+trans_train <- train_set %>%
+  mutate(tra_Global_Sales = log(Global_Sales),
+         tra_NA_Sales = log(NA_Sales),
+         tra_EU_Sales = log(EU_Sales),
+         tra_JP_Sales = JP_Sales ^(-0.5),
+         tra_Other_Sales = log(Other_Sales),
+         tra_Critic_Score = Critic_Score ^(2),
+         tra_Critic_Count = log(Critic_Count),
+         tra_User_Score = User_Score ^(3),
+         tra_User_Count = log(User_Count))
+
+
+test_train <- test_set %>%
+  mutate(tra_Global_Sales = log(Global_Sales),
+         tra_NA_Sales = log(NA_Sales),
+         tra_EU_Sales = log(EU_Sales),
+         tra_JP_Sales = JP_Sales ^(-0.5),
+         tra_Other_Sales = log(Other_Sales),
+         tra_Critic_Score = Critic_Score ^(2),
+         tra_Critic_Count = log(Critic_Count),
+         tra_User_Score = User_Score ^(3),
+         tra_User_Count = log(User_Count))
+```
+```{r, results= FALSE}
+test_model1 <- lm(tra_Global_Sales ~ Genre+Publisher+ Rating+tra_NA_Sales+tra_JP_Sales+tra_EU_Sales+tra_Other_Sales  +tra_User_Score+tra_User_Count+tra_Critic_Score+tra_Critic_Count+tra_User_Score +tra_User_Count, data=test_train)
+
+test_model2 <- lm(tra_Global_Sales ~ Publisher+ Rating+tra_NA_Sales+tra_JP_Sales+tra_EU_Sales+tra_Other_Sales  +tra_User_Score+tra_User_Count+tra_Critic_Score+tra_Critic_Count+tra_User_Score +tra_User_Count, data=test_train)
+
+test_model3 <- lm(tra_Global_Sales ~ Rating+tra_NA_Sales+tra_JP_Sales+tra_EU_Sales+tra_Other_Sales  +tra_User_Score+tra_User_Count+tra_Critic_Score+tra_Critic_Count+tra_User_Score +tra_User_Count, data=test_train)
+vif(test_model3)
+```
+```{r}
+trans_model1 <- lm(tra_Global_Sales ~ .-Name -Year_of_Release  -NA_Sales -Global_Sales -EU_Sales -JP_Sales -Other_Sales -Critic_Score -Critic_Count -User_Score -User_Count -Developer - Platform, data=trans_train)
+
+trans_model2 <- lm(tra_Global_Sales ~ .-Name -Year_of_Release  -NA_Sales -Global_Sales -EU_Sales -JP_Sales -Other_Sales -Critic_Score -Critic_Count -User_Score -User_Count -Developer - Platform -Genre, data=trans_train)
+
+trans_model3 <- lm(tra_Global_Sales ~ Rating+tra_NA_Sales+tra_EU_Sales+tra_JP_Sales+tra_Other_Sales  +tra_User_Score+tra_User_Count+tra_Critic_Score+tra_Critic_Count+tra_User_Score +tra_User_Count  , data=trans_train)
+vif(trans_model3)
+```
+```{r, echo = FALSE, results = TRUE}
+summary(trans_model3)
+redu_model <- lm(tra_Global_Sales ~ Rating+ tra_NA_Sales + tra_EU_Sales + tra_JP_Sales + tra_User_Score+tra_Other_Sales+tra_Critic_Score+tra_Critic_Count, data=trans_train)
+anova(redu_model, trans_model3)
+summary1<-summary(redu_model)
+
+summary(test_model3)
+test_redu1 <- lm(tra_Global_Sales ~ Rating+ tra_NA_Sales + tra_EU_Sales + tra_JP_Sales + tra_User_Score+tra_Other_Sales+tra_Critic_Score+tra_Critic_Count, data=test_train)
+anova(test_redu1, test_model3)
+summary2<-summary(test_redu1)
+```
+```{r, echo = FALSE, results = TRUE}
+redu_mode2 <- lm(tra_Global_Sales ~ Rating+ tra_NA_Sales + tra_EU_Sales + tra_JP_Sales + tra_User_Score+tra_Other_Sales+tra_Critic_Score, data=trans_train)
+anova(redu_mode2, redu_model)
+redu_mode3 <- lm(tra_Global_Sales ~ Rating+ tra_NA_Sales + tra_EU_Sales + tra_JP_Sales + tra_User_Score+tra_Other_Sales, data=trans_train)
+anova(redu_mode3, redu_model)
+redu_mode4 <- lm(tra_Global_Sales ~ Rating+ tra_NA_Sales + tra_EU_Sales + tra_JP_Sales +tra_Other_Sales, data=trans_train)
+anova(redu_mode4, redu_model)
+```
+```{r, echo = FALSE, results = TRUE}
+test_redu2 <- lm(tra_Global_Sales ~ tra_EU_Sales + tra_JP_Sales + tra_User_Count+tra_Other_Sales+tra_Critic_Score, data=test_train)
+anova(test_redu2, test_redu1)
+test_redu3 <- lm(tra_Global_Sales ~ tra_JP_Sales + tra_User_Count+tra_Other_Sales, data=test_train)
+anova(test_redu3, test_redu1)
+test_redu4 <- lm(tra_Global_Sales ~ tra_User_Count+tra_Other_Sales, data=test_train)
+anova(test_redu4, test_redu1)
+test_redu5 <- lm(tra_Global_Sales ~ tra_Other_Sales, data=test_train)
+anova(test_redu5, test_redu1)
+```
+```{r}
+hat <- hatvalues(trans_model1)
+cut <- 2*(length(trans_model1$coefficients)/nrow(trans_train))
+x <- which(hat > cut)
+outlier <- rstandard(trans_model1)
+y <- which(abs(outlier)>4)
+DFFITScut <- 2*sqrt((length(trans_model1$coefficients)+1)/nrow(trans_train))
+fits <- dffits(trans_model1)
+k <- which(abs(fits) > DFFITScut)
+
+
+hat2 <- hatvalues(test_model1)
+cut <- 2*(length(test_model1$coefficients)/nrow(trans_train))
+x1 <- which(hat > cut)
+outlier <- rstandard(test_model1)
+y2 <- which(abs(outlier)>4)
+DFFITScut <- 2*sqrt((length(test_model1$coefficients)+1)/nrow(trans_train))
+fits <- dffits(test_model1)
+k2 <- which(abs(fits) > DFFITScut)
+```
+Therefore, I build a model whose predictors are all less than 5. There are `r length(x)` leverage points, `r length(y)` outliers and `r length(k)` influential points in the training set. There are `r length(x1)` leverage points, `r length(y2)` outliers and `r length(k2)` influential points in the test set. There is no strong reason for me to remove such data and no more new assumptions are violated. Therefore, I build up my final model to interpret.
+
+
+Table 3: The summary about the final model
+
+Variable | Coefficient(Train) | Coefficient(Test) |Standard Error(Train set)|Standard Error(Test)
+----------------|--------------|--------------|--------------|--------------
+Intercept | `r redu_model$coefficients[1]`  | `r test_redu1$coefficients[1]` | `r summary1$coefficients[,2][1]`|`r summary2$coefficients[,2][1]`
+E rating(for everyone) | `r redu_model$coefficients[2]`  | 0 | `r summary1$coefficients[,2][2]`|0
+E10+ rating(for 10+ all) | `r redu_model$coefficients[3]`  | `r test_redu1$coefficients[2]` | `r summary1$coefficients[,2][3]`|`r summary2$coefficients[,2][2]`
+K-A rating(kids to adults) | `r redu_model$coefficients[4]`  | 0 | `r summary1$coefficients[,2][4]`|0
+M rating(for 17+) | `r redu_model$coefficients[5]`  | `r test_redu1$coefficients[3]` | `r summary1$coefficients[,2][5]`|`r summary2$coefficients[,2][3]`
+RP rating(for mature 17+) |`r redu_model$coefficients[6]`  | 0 | `r summary1$coefficients[,2][6]`|0
+T rating(for 13+ teenagers) | `r redu_model$coefficients[7]`  | `r test_redu1$coefficients[4]` | `r summary1$coefficients[,2][7]`|`r summary2$coefficients[,2][4]`
+$log{NaSales}$ | `r redu_model$coefficients[8]`  | `r test_redu1$coefficients[5]` | `r summary1$coefficients[,2][8]`|`r summary2$coefficients[,2][5]`
+$log{EuSales}$| `r redu_model$coefficients[9]`  | `r test_redu1$coefficients[6]` | `r summary1$coefficients[,2][9]`|`r summary2$coefficients[,2][6]`
+$JPsales^{-1}$ | `r redu_model$coefficients[10]`  | `r test_redu1$coefficients[7]` | `r summary1$coefficients[,2][10]`|`r summary2$coefficients[,2][7]`
+$log{OtherSales}$ | `r redu_model$coefficients[12]`  | `r test_redu1$coefficients[9]` | `r summary1$coefficients[,2][12]`|`r summary2$coefficients[,2][9]`
+$MediaScore^{2}$ | `r redu_model$coefficients[13]`  | `r test_redu1$coefficients[10]` | `r summary1$coefficients[,2][13]`|`r summary2$coefficients[,2][10]`
+$UserScore^{3}$|`r redu_model$coefficients[11]`  | `r test_redu1$coefficients[8]` | `r summary1$coefficients[,2][11]`|`r summary2$coefficients[,2][8]`
+$log({MediaComments})$| `r redu_model$coefficients[14]`  | `r test_redu1$coefficients[11]` | `r summary1$coefficients[,2][14]`|`r summary2$coefficients[,2][11]`
+
+## Discussion
+Based on Table 3, I have my full model, its linear relationship is expressed(Y represents global sales):
+$$
+\begin{aligned}
+log{Y}=
+\beta_0+\beta_1ERating+&\beta_2E10^+Rating+\cdots+\beta_7log{NaSales}+\beta_8log{EuSales}+\beta_{9}JPsales^{-1}+\\\beta_{10}log{OtherSales}+\
+&\beta_{11}MediaScore^{2}+\beta_{12}UserScore^{3}+\beta_{13}log{MediaComments}
+\end{aligned}
+$$
+I could see from above, test and train data set does not witness a huge difference except for test data set missing information for few variables and the variances between few variables(See Discussions). With the similar trend, I use training data to illustrate my conclusion. One thing to mention is that the test data contains less data for losing rating categories(E, K-A, RP ratings). Therefore, I mainly use training data set to illustrate the linear relationship. With the full model, it is clear that rating in this model effects the model slightly. If a game has rating K-A, it would increase for `r redu_model$coefficients[4]` in $\log{GlobalSales}$ if other variables are fixed. Among all regions, NA sales would account for the most part of sales. For one unit increase in $\log{NaSales}$, it is expected that the log of global sales would increase by `r redu_model$coefficients[8]` fixed other variables. One interesting fact is that I notice that the $\log{GlobalSales}$ would decreases by `r redu_model$coefficients[10]` with increase in a unit increase in $JPsales^{-1}$. It is pretty shocking that the model reflects such fact. At the same time, the sales in other regions is similar significant to NA regions. The media score and media comments would also have a positive influence on the global sales. I expect the $\log{GlobalSales}$ would increase by `r redu_model$coefficients[13]` and `r redu_model$coefficients[14]` respectively, one unit increase in $MediaScore^{2}$ and $log({MediaComments})$. From the above results, my null hypothesis has to be rejected unfortunately. In the data set, my null hypothesis suggests that the company, platform and media score would significantly effect the global sale logically, but they are co-linear to other variables, which has been eliminated while I am trying to fit the model. It turns out the NA,Europe,Japan regions, media score and media comment numbers would effet the global sales significantly. Companies could make the corresponding market strategy for the bigger benefits. 
+
+In the test data set, some of the rating information is not included, which means some important information when splitting the data is missing. While I am trying to refit the model, the model might not be perfectly accurate.The similar trend could be found on the standard deviation for some variables(Rating) in sets. They witness a huge difference in standard deviations. Therefore, I am expecting larger data sets so that the experiment could be more accurate. And also, I drop all the missing value in the very beginning, which means some useful information might not be captured, resulting in the incorrectness of the final model. My final model does not satisfy the normality, resulting the result of the experiment less reliable.. The slight violation of dependent assumption and homoscedaisticy would also make the final model less reliable.The fact I discussed above might be resulted by BOXCOX transformation. It is not logical that Japanese sales would pose a negative influence on the global sale slightly. The power transformation might not be perfectly suitable in this scenario. There may be some extreme values in the data, which may affect the stability and accuracy of the experimental results. And in the final model, there still exists some variables with >0.05 p-value, which means they are not very significant.
+
+
+
+```{r}
+hat <- hatvalues(trans_model1)
+cut <- 2*(length(trans_model1$coefficients)/nrow(trans_train))
+x <- which(hat > cut)
+outlier <- rstandard(trans_model1)
+y <- which(abs(outlier)>4)
+DFFITScut <- 2*sqrt((length(trans_model1$coefficients)+1)/nrow(trans_train))
+fits <- dffits(trans_model1)
+k <- which(abs(fits) > DFFITScut)
+
+
+hat2 <- hatvalues(test_model1)
+cut <- 2*(length(test_model1$coefficients)/nrow(trans_train))
+x1 <- which(hat > cut)
+outlier <- rstandard(test_model1)
+y2 <- which(abs(outlier)>4)
+DFFITScut <- 2*sqrt((length(test_model1$coefficients)+1)/nrow(trans_train))
+fits <- dffits(test_model1)
+k2 <- which(abs(fits) > DFFITScut)
+```
+
+
+
+```{r}
+yhat <- fitted(redu_model)
+y <- trans_train$tra_Global_Sales
+plot(y,yhat)
+abline(a = 0, b = 1)
+lines(lowess(y ~ yhat), lty=2)
+
+y_hat <- fitted(test_model1)
+y <- test_train$tra_Global_Sales
+plot(y,y_hat)
+abline(a = 0, b = 1)
+lines(lowess(y ~ y_hat), lty=2)
+```
+ 
+ 
+ 
+```{r}
+pairs(~  tra_NA_Sales
+         +tra_EU_Sales
+         +tra_JP_Sales+
+         tra_Other_Sales+
+         tra_Critic_Score+
+         tra_Critic_Count+
+         tra_User_Score, data=trans_train)
+pairs(~  tra_NA_Sales
+         +tra_EU_Sales
+         +tra_JP_Sales+
+         tra_Other_Sales+
+         tra_Critic_Score+
+         tra_Critic_Count+
+         tra_User_Score, data=test_train)
+```
+
+
+```{r}
+residual <- redu_model$residuals
+yhat1 <- fitted(redu_model)
+re_plot1 <- plot(yhat1, residual)
+
+
+residual2 <- test_redu1$residuals
+yhat <- fitted(test_redu1)
+re_plot2 <- plot(yhat, residual2)
+```
+```{r}
+par(mfrow = c(1, 2))
+plot(trans_train$tra_NA_Sales, residual)
+plot(trans_train$tra_EU_Sales, residual)
+plot(trans_train$tra_Other_Sales, residual)
+plot(trans_train$tra_Critic_Score, residual)
+plot(trans_train$tra_Critic_Count, residual)
+plot(trans_train$tra_User_Score, residual)
+plot(trans_train$tra_JP_Sales, residual)
+
+
+par(mfrow = c(1, 2))
+plot(test_train$tra_NA_Sales, residual2)
+plot(test_train$tra_EU_Sales, residual2)
+plot(test_train$tra_Other_Sales, residual2)
+plot(test_train$tra_Critic_Score, residual2)
+plot(test_train$tra_Critic_Count, residual2)
+plot(test_train$tra_User_Score, residual2)
+plot(test_train$tra_JP_Sales, residual2)
+
+
+```
+```{r}
+qqnorm(residual)
+qqline(residual)
+qqnorm(residual2)
+qqline(residual2)
+```
+## Appendix
+```{r, include = TRUE}
+Figure4 <- data.frame("Important_Variables" = c("Platform", "Year_of_Release", "Genre","Publisher", "NA_Sales" , "EU_Sales", "JP_Sales","Other_Sales","Global_Sales","Critic_Score","Critic_Count","User_Score","User_Count","Developer","Rating"), "Variable_types" = c("Cateogrical", "Numerical", "Categorical", "Categorical","Numerical", "Numerical", "Numerical","Numerical","Numerical","Numerical","Numerical","Numerical","Numerical","Categorical","Categorical"), "Variable Disription" = c("The platform game relases", "Year of game release", "Genre of the game(action,puzzle..)", "The publisher company of the game", "Sales in North America", "Sales in Europe", "Sales in Japan", "Sales in other regions", "The sales in global", "Aggregate score compiled by Metacritic staff", "The numer of comments by Metacritic staff on the game", "The score users rate on the game", "Number of users who gave the userscore", "The developer of the game", "The ESRB ratings"))
+knitr::kable(Figure4,
+             caption="The variables in the data set")
+```
+
+```{r}
+
+```
+
+Figure 5: The residual plots and normal QQ plot in training set
+
+```{r}
+
+```
+
+```{r, fig.cap='', include= TRUE}
+par(mfrow=c(2,4))
+residual <- redu_model$residuals
+yhat <- fitted(redu_model)
+re_plot1 <- plot(yhat, residual)
+plot(trans_train$tra_NA_Sales, residual, xlab="Sales in NA")
+plot(trans_train$tra_EU_Sales, residual, xlab="Sales in Eurpoe")
+plot(trans_train$tra_Other_Sales, residual,xlab="Sales in Other regions")
+plot(trans_train$tra_Critic_Score, residual,xlab="Media score")
+plot(trans_train$tra_Critic_Count, residual,xlab="Media evaluation numbers")
+plot(trans_train$tra_User_Score, residual, xlab = "User score on games")
+qqnorm(residual)
+qqline(residual)
+```
+
+
+
+Figure 6: The residual plots and normal QQ plot in testing set
+```{r}
+
+```
+
+```{r, fig.cap='', include= TRUE}
+par(mfrow=c(2,4))
+residual2 <- test_redu1$residuals
+yhat <- fitted(test_redu1)
+plot(yhat, residual2, ylab="Residual")
+plot(test_train$tra_NA_Sales, residual2, xlab="Sales in NA")
+plot(test_train$tra_EU_Sales, residual2, xlab="Sales in Eurpoe")
+plot(test_train$tra_Other_Sales, residual2,xlab="Sales in Other regions")
+plot(test_train$tra_Critic_Score, residual2,xlab="Media score")
+plot(test_train$tra_Critic_Count, residual2,xlab="Media evaluation numbers")
+plot(test_train$tra_User_Score, residual2, xlab = "User score on games")
+qqnorm(residual2)
+qqline(residual2)
+```
+
+
+## Reference
+[1] Kunlin, Li. et,al.(2020, July)*Exploring the influence of online reviews and motivating factors on sales: A meta-analytic study and the moderating role of product category*.School of Information Management, Wuhan University, PR China[https://www.sciencedirect.com/science/article/pii/S0969698919304011]. 
+
+[3] Mirko Ernkvist & Patrik Ström (2018) *Differentiation in digital creative industry cluster dynamics: the growth and decline of the Japanese* Geografiska Annaler: Series B, Human Geography, 100:3, 263-286, DOI:
+10.1080/04353684.2017.1423506[https://www.tandfonline.com/doi/full/10.1080/04353684.2017.1423506]
+
+[3] Neil, T. et, al.(2013, Sep) *The Impact Of Platform On Global Video Game Sales*.International Business & Economics Research Journal (IBER) [https://www.researchgate.net/publication/297754899_The_Impact_Of_Platform_On_Global_Video_Game_Sales].  
+
+[4] SID_TWR(2018)*Video Games Sales Dataset* Kaggle.com
+[https://www.kaggle.com/datasets/sidtwr/videogames-sales-dataset/code]
+
+
